@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
+
+import org.json.JSONObject;
+
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
 
@@ -53,5 +56,14 @@ public class Function {
         }
 
         return request.createResponseBuilder(HttpStatus.OK).body(sb.toString()).build();
+    }
+    
+    @FunctionName("JsonFunc")
+    public HttpResponseMessage jsonfunc(
+            @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
+            final ExecutionContext context) {
+        context.getLogger().info("Java HTTP trigger processed a request.");
+        JSONObject jObj = new JSONObject(request.getBody().get());
+        return request.createResponseBuilder(HttpStatus.OK).body("Created JSONObject\n" + jObj.toString()).build();
     }
 }
