@@ -43,20 +43,21 @@ public class HttpResponseMessageMock implements HttpResponseMessage {
 
     public static class HttpResponseMessageBuilderMock implements HttpResponseMessage.Builder {
         private Object body;
-        private int httpStatusCode;
+        @SuppressWarnings("unused")
+		private int httpStatusCode;
         private Map<String, String> headers;
         private HttpStatusType httpStatus;
 
-        public Builder status(HttpStatus status) {
-            this.httpStatusCode = status.value();
-            this.httpStatus = status;
+        public Builder status(HttpStatus s) {
+            this.httpStatusCode = s.value();
+            this.httpStatus = s;
             return this;
         }
 
         @Override
-        public Builder status(HttpStatusType httpStatusType) {
-            this.httpStatusCode = httpStatusType.value();
-            this.httpStatus = httpStatusType;
+        public Builder status(HttpStatusType t) {
+            this.httpStatusCode = t.value();
+            this.httpStatus = t;
             return this;
         }
 
