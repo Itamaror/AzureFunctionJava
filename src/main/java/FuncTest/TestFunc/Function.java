@@ -11,6 +11,8 @@ import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2Intent
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2IntentMessageSimpleResponses;
 import com.google.api.services.dialogflow.v2.model.GoogleCloudDialogflowV2WebhookResponse;
 import com.microsoft.azure.functions.*;
+
+import org.apache.http.entity.StringEntity;
 import org.json.*;
 
 /**
@@ -22,7 +24,7 @@ public class Function {
     public HttpResponseMessage run(
             @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> s,
             final ExecutionContext c) {
-        c.getLogger().info("=========== GET BUSINESS HOURS BY DAY ===========");
+        c.getLogger().info("=========== GET BUSINESS HOURS BY DAY ITAMARs ===========");
         //===================================
         // HANDLE HTTP PARAMETERS
         JSONObject obj = new JSONObject(s.getBody().get().toString());
@@ -101,41 +103,20 @@ public class Function {
     }
     
     public static HttpResponseMessage createWebhookResponseContent(String resultText, HttpRequestMessage<Optional<String>> s){
-//    	// create simple response
-//    	GoogleCloudDialogflowV2IntentMessageSimpleResponse sr = new GoogleCloudDialogflowV2IntentMessageSimpleResponse();
-//    	sr.setDisplayText("display text");
-//    	sr.setTextToSpeech("text to speech");
-//    	// create list of simple response
-//    	List<GoogleCloudDialogflowV2IntentMessageSimpleResponse> sr_list = new ArrayList<>();
-//    	sr_list.add(sr);
-//    	// set simple_responses
-//    	GoogleCloudDialogflowV2IntentMessageSimpleResponses sr1 = new GoogleCloudDialogflowV2IntentMessageSimpleResponses();
-//    	sr1.setSimpleResponses(sr_list);
-//    	// set intent msg
-//    	GoogleCloudDialogflowV2IntentMessage intentmsg = new GoogleCloudDialogflowV2IntentMessage();
-//    	intentmsg.setSimpleResponses(sr1);
-//    	// set list of intent msgs
-//    	List<GoogleCloudDialogflowV2IntentMessage> intent_list = new ArrayList<>();
-//    	intent_list.add(intentmsg);
-//    	// set up the response
-//    	GoogleCloudDialogflowV2WebhookResponse response = new GoogleCloudDialogflowV2WebhookResponse();
-//    	response.setFulfillmentMessages(intent_list);
-//    	response.setFulfillmentText(resultText);
-//    	Map<String,Object> my_map = new HashMap<String, Object>();
-//    	my_map.put("expectUserResponse", Boolean.TRUE);
-//    	response.setPayload(my_map);
-//    	
-//    	return s.createResponseBuilder(HttpStatus.OK).body(response.toString()).header("Content-Type", "application/json").build();
-    	return s.createResponseBuilder(HttpStatus.OK)
-				.body(new JSONObject().put("fulfillmentText", resultText)
-						.put("fulfillmentMessages",
-								new JSONArray().put(new JSONObject().put("simpleResponses",
-										new JSONObject().put("simpleResponses",
-												new JSONArray().put(new JSONObject().put("displayText", "display text")
-														.put("textToSpeech", "display text"))))))
-						.put("payload",
-								new JSONObject().put("google", new JSONObject().put("expectUserResponse", Boolean.TRUE)))
-						.toString()).header("Content-Type", "application/json")
+    	String json = new JSONObject().put("fulfillmentText", resultText)
+		.put("fulfillmentMessages",
+				new JSONArray().put(new JSONObject().put("simpleResponses",
+						new JSONObject().put("simpleResponses",
+								new JSONArray().put(new JSONObject().put("displayText", "display text")
+										.put("textToSpeech", "display text"))))))
+		.put("payload",
+				new JSONObject().put("google", new JSONObject().put("expectUserResponse", Boolean.TRUE)))
+		.toString();
+    	
+    	HttpResponseMessage resp = s.createResponseBuilder(HttpStatus.OK)
+				.body(json.getBytes()).header("Content-Type", "application/json; charset=UTF-8").header("Accept", "application/json")
 				.build();
+
+    	return resp;
     }
 }
